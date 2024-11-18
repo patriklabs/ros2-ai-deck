@@ -1,0 +1,28 @@
+{
+	"name": "ML",
+	"context": "..",
+	"dockerFile": "Dockerfile",
+	// Comment out next line to run as root
+	"remoteUser": "ubuntu",
+	"customizations": {
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created in the array below.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"ms-python.isort"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	},
+	"runArgs": [
+		"--gpus=all",
+		"-e=DISPLAY",
+		"--net=host",
+		"--rm"
+	],
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+	"workspaceFolder": "/workspace"
+}
