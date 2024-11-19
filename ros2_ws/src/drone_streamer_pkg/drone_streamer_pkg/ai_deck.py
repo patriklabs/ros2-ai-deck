@@ -205,7 +205,7 @@ class AiDeck:
 
                 self.image_data = None
 
-    def send_command(self, setpoint: VelocitySetpoint):
+    def set_velocity_setpoint(self, setpoint: VelocitySetpoint):
         cpxPacket = CPXPacket(
             MyCPXFunction.CPX_F_CONTROL,
             CPXTarget.GAP8,

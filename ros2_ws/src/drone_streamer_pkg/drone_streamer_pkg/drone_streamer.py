@@ -1,20 +1,34 @@
+import numpy as np
 import rclpy
-
-
-import rclpy
+from geometry_msgs.msg import Twist
 from rclpy.node import Node
 from rclpy.time import Time
-from sensor_msgs.msg import Imu, Image
-from .ai_deck import AiDeck, IMU, ImageData, AiDeckCallbackInterface
-import numpy as np
+from sensor_msgs.msg import Image, Imu
+
+from .ai_deck import IMU, AiDeck, AiDeckCallbackInterface, ImageData, VelocitySetpoint
 
 
 class AiDeckRelay(Node, AiDeckCallbackInterface):
 
-    def __init__(self):
+    def __init__(self, ai_deck: AiDeck):
         super().__init__("AiDeckRelay")
         self.imu_publisher_ = self.create_publisher(Imu, "imu", 100)
-        self.image_publisher_ = self.create_publisher(Image, "image", 100)
+        self.image_publisher_ = self.create_publisher(Image, "image", 10)
+        self.subscription = self.create_subscription(
+            Twist, "setpoint", self.listener_twist_callback, 10
+        )
+        self.subscription  # prevent unused variable warning
+        self.ai_deck = ai_deck
+
+    def listener_twist_callback(self, msg: Twist):
+        self.ai_deck.set_velocity_setpoint(
+            VelocitySetpoint(
+                msg.linear.x,
+                msg.linear.y,
+                msg.linear.z,
+                msg.angular.z,
+            )
+        )
 
     def imu_callback(self, imu: IMU):
         imu_data = Imu()
@@ -56,8 +70,8 @@ class AiDeckRelay(Node, AiDeckCallbackInterface):
 def main(args=None):
     rclpy.init(args=args)
 
-    relay = AiDeckRelay()
     ai_deck = AiDeck(show_image=True)
+    relay = AiDeckRelay(ai_deck)
 
     while relay.context.ok():
 
