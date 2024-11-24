@@ -79,7 +79,7 @@ def main(args=None):
         ai_deck.spin_once(relay)
 
     relay.destroy_node()
-    rclpy.shutdown()
+    # rclpy.shutdown()
 
 
 if __name__ == "__main__":
